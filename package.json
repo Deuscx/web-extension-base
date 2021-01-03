@@ -10,7 +10,8 @@
     "debugger": "cross-env NODE_ENV=production node --inspect --inspect-brk  ./node_modules/webpack/bin/webpack.js --mode=production   --progress"
   },
   "keywords": [
-    "extension", "react"
+    "extension",
+    "react"
   ],
   "author": "deuscx <1475453714@qq.com> (https://github.com/Deuscx)",
   "license": "ISC",
@@ -54,6 +55,7 @@
     "webpack-dev-server": "^3.11.1"
   },
   "dependencies": {
+    "@types/chrome": "^0.0.127",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",

@@ -9,7 +9,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const resolve = (relativePath) => path.resolve(__dirname, relativePath);
 const isEnvDevelopment = process.env.NODE_ENV === "development";
 const isEnvProduction = process.env.NODE_ENV === "production";
-
+const version =  require('./package.json').version;
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
@@ -23,6 +23,7 @@ module.exports = {
     popup: paths.popupIndex,
     options: paths.optionsIndex,
     background: paths.backgroundJs,
+    content: paths.contentJs
   },
   output: {
     filename: "[name].js",
@@ -152,8 +153,19 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: "src/manifest.json",
-          to: "[name].[ext]",
+          from: path.resolve(__dirname, "src", "manifest.json"),
+          to: 'manifest.json',
+          transform: (content) => {
+            const jsonContent = JSON.parse(content);
+          
+            jsonContent.version = version;
+
+            if (isEnvDevelopment) {
+              jsonContent.content_security_policy = "script-src 'self' 'unsafe-eval'; object-src 'self'";
+            }
+
+            return JSON.stringify(jsonContent, null, 2);
+          }
         },
         {
           from: path.resolve(__dirname, "src", "assets"),
@@ -165,6 +177,12 @@ module.exports = {
           from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js',
           to: 'assets/js/',
         },
+        {
+          from: path.resolve(__dirname,'src','_locales'),
+          to({ context, absoluteFilename }) {
+            return `_locales/${path.relative(context, absoluteFilename)}`;
+          },
+        }
       ],
     }),
   ],
